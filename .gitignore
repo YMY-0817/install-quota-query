@@ -1,0 +1,18 @@
+# 依赖（本项目零依赖，留作占位）
+node_modules/
+package-lock.json
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 本地临时文件
+_*.png
+_*.html
+*.bak
+*.bak-*
+*.log
+__pycache__/

@@ -1,0 +1,22 @@
+{
+  "name": "install-quota-query",
+  "version": "3.0.0",
+  "private": true,
+  "description": "2021 河北省安装工程消耗量标准查询器 · 单文件 PWA，可离线、可装到安卓桌面",
+  "homepage": "https://github.com/YMY-0817/install-quota-query",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YMY-0817/install-quota-query.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "extract": "node scripts/extract-data.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "icons": "python scripts/make-icons.py"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

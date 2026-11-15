@@ -1,0 +1,6 @@
+# 统一以 LF 存储，避免 Windows 用户提交 CRLF 后 diff 全红
+* text=auto eol=lf
+
+# 二进制，不做换行转换
+*.png binary
+*.ico binary

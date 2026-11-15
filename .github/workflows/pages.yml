@@ -1,0 +1,64 @@
+name: Deploy PWA to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 只发布运行所需文件，docs/ 与 scripts/ 不进 Pages 站点
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 校验数据与资源
+        run: |
+          set -e
+          node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest','utf8'))" && echo "manifest.json OK"
+          node -e "JSON.parse(require('fs').readFileSync('data/dataset.json','utf8'))" && echo "dataset.json OK"
+          node --check sw.js && echo "sw.js OK"
+          node -e "
+            const d=JSON.parse(require('fs').readFileSync('data/dataset.json','utf8'));
+            const c=d.meta.counts;
+            const a={divisions:d.divisions.length,sections:d.sections.length,items:d.items.length,records:d.consumptions.length};
+            for(const k in a){ if(c[k]!==a[k]){ console.error('数量不一致:',k,c[k],a[k]); process.exit(1);} }
+            console.log('数据自检通过', JSON.stringify(a));
+          "
+
+      - name: 组装发布目录
+        run: |
+          mkdir -p _site
+          cp index.html manifest.webmanifest sw.js _site/
+          cp -r icons _site/icons
+          touch _site/.nojekyll
+          ls -R _site | head -20
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
